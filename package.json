@@ -1,0 +1,42 @@
+{
+  "name": "sphero-pwn-cli",
+  "version": "0.2.0",
+  "description": "Command-line tools for Sphero robots",
+  "keywords": ["sphero"],
+  "homepage": "https://github.com/pwnall/node-sphero-cli",
+  "author": "Victor Costan <victor@costan.us> (http://www.costan.us)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pwnall/node-sphero-pwn-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pwnall/node-sphero-pwn-cli/issues"
+  },
+  "engines": {
+    "node": "5.x"
+  },
+  "dependencies": {
+    "coffee-script": ">= 1.10.0",
+    "sphero-pwn": ">= 0.2.0",
+    "fs-promise": ">= 0.3.1"
+  },
+  "devDependencies": {
+    "chai": ">= 3.4.1",
+    "codo": ">= 2.0.11",
+    "mocha": ">= 2.3.4",
+    "sinon": ">= 1.17.2",
+    "sinon-chai": ">= 2.8.0",
+    "temp": ">= 0.8.3"
+  },
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "src": "src",
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node lib/boot.js",
+    "test": "node node_modules/mocha/bin/mocha --compilers coffee:coffee-script/register --timeout 60000 --require test/helpers.coffee"
+  }
+}
