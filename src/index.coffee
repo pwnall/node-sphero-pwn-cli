@@ -1,34 +1,71 @@
 fs = require 'fs-promise'
 Sphero = require 'sphero-pwn'
 
-module.exports.bootCli = ->
-  rfconnPath = process.argv[2]
-  channel = new Sphero.Channel rfconnPath
-  recorder = new Sphero.ChannelRecorder channel, 'sphero.log'
-  robot = new Sphero.Robot recorder
-  robot.on 'error', (error) ->
-    console.error error
-  robot.on 'basicPrint', (message) ->
-    console.log "orbBasic print: #{message}"
-  robot.on 'basicError', (message) ->
-    console.log "orbBasic error: #{message}"
-
-  basicPath = process.argv[3]
-  basicCode = null
-
-  fs.readFile(basicPath, encoding: 'utf8')
+runBasic = (robot, sourcePath) ->
+  sourceCode = null
+  fs.readFile(sourcePath, encoding: 'utf8')
     .then (data) ->
-      console.log "Read orBasic from #{basicPath}"
-      basicCode = data
+      console.log "Read orBasic from #{sourcePath}"
+      sourceCode = data
       robot.abortBasic()
     .then ->
-      console.log "Reset Spehro at #{rfconnPath}"
-      robot.loadBasic 'ram', basicCode
+      console.log 'Aborted current orBasic program'
+      robot.loadBasic 'ram', sourceCode
     .then ->
-      console.log "Loaded orBasic into Sphero RAM"
+      console.log 'Loaded orBasic into Sphero RAM'
       robot.executeBasic 'ram', 10
     .then ->
-      console.log "Started orBasic at line 10 in Sphero RAM"
+      console.log 'Started orBasic at line 10 in Sphero RAM'
     .catch (error) ->
       console.error error
       robot.close()
+
+runMacro = (robot, sourcePath) ->
+  macro = null
+  fs.readFile(sourcePath, encoding: 'utf8')
+    .then (data) ->
+      console.log "Read macro from #{sourcePath}"
+      macro = Sphero.Macro.compile data
+      console.log "Compiled macro"
+      robot.resetMacros()
+    .then ->
+      console.log "Reset Spehro macro executive"
+      robot.setMacro 0xFF, new Buffer(macro.bytes)
+    .then ->
+      console.log "Loaded macro into Sphero RAM"
+      robot.runMacro 0xFF
+    .then ->
+      console.log "Started macro"
+    .catch (error) ->
+      console.error error
+      robot.close()
+
+module.exports.bootCli = ->
+  sourceId = process.argv[2]
+  sourcePath = process.argv[3]
+
+  if sourcePath.endsWith('.bas')
+    run = runBasic
+  else if sourcePath.endsWith('.macro')
+    run = runMacro
+  else
+    console.error "Unsupported source code extension"
+    process.exit 1
+
+  Sphero.Discovery.find(sourceId)
+    .then (channel) ->
+      recorder = new Sphero.ChannelRecorder channel, 'sphero.log'
+      recorder.open().then -> recorder
+    .then (recorder) ->
+      robot = new Sphero.Robot recorder
+      robot.on 'error', (error) ->
+        console.error error
+      robot.on 'macro', (event) ->
+        console.log "macro marker: #{event.markerId} macro #{event.macroId} " +
+                    "command: #{event.commandId}"
+      robot.on 'basicPrint', (event) ->
+        console.log "orbBasic print: #{event.message}"
+      robot.on 'basicError', (event) ->
+        console.log "orbBasic error: #{event.message}"
+
+      run robot, sourcePath
