@@ -29,7 +29,7 @@ runMacro = (robot, sourcePath) ->
       console.log "Compiled macro"
       robot.resetMacros()
     .then ->
-      console.log "Reset Spehro macro executive"
+      console.log "Reset Sphero macro executive"
       robot.setMacro 0xFF, new Buffer(macro.bytes)
     .then ->
       console.log "Loaded macro into Sphero RAM"
@@ -52,7 +52,7 @@ module.exports.bootCli = ->
     console.error "Unsupported source code extension"
     process.exit 1
 
-  Sphero.Discovery.find(sourceId)
+  Sphero.Discovery.findChannel(sourceId)
     .then (channel) ->
       recorder = new Sphero.ChannelRecorder channel, 'sphero.log'
       recorder.open().then -> recorder
