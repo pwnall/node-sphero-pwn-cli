@@ -1,5 +1,9 @@
+# This macro prints out a marker and flashes the Sphero's RGB LED.
+flag $markerOnEnd :on
+flag $stopOnDisconnect :on
+
+rgb 0, 255, 0
+rgbfade 0, 0, 255, 3000
 marker 42
-delay 500
-marker 43
-delay 500
+delay 3000
 end

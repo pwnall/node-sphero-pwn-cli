@@ -10,6 +10,9 @@
 # Node output.
 npm-debug.log
 
+# Sphero communication log.
+sphero.log
+
 # Node packaging output.
 sphero-pwn-*.tgz
 

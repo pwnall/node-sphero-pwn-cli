@@ -18,7 +18,8 @@
   },
   "dependencies": {
     "coffee-script": ">= 1.10.0",
-    "sphero-pwn": ">= 0.3.0",
+    "sphero-pwn": ">= 0.4.0",
+    "sphero-pwn-macros": ">= 0.1.0",
     "fs-promise": ">= 0.3.1"
   },
   "devDependencies": {

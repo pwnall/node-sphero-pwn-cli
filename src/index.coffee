@@ -1,21 +1,22 @@
 fs = require 'fs-promise'
 Sphero = require 'sphero-pwn'
+macros = require 'sphero-pwn-macros'
 
 runBasic = (robot, sourcePath) ->
   sourceCode = null
   fs.readFile(sourcePath, encoding: 'utf8')
     .then (data) ->
-      console.log "Read orBasic from #{sourcePath}"
+      console.log "Read orbBasic from #{sourcePath}"
       sourceCode = data
       robot.abortBasic()
     .then ->
-      console.log 'Aborted current orBasic program'
+      console.log 'Aborted current orbBasic program'
       robot.loadBasic 'ram', sourceCode
     .then ->
-      console.log 'Loaded orBasic into Sphero RAM'
-      robot.executeBasic 'ram', 10
+      console.log 'Loaded orbBasic into Sphero RAM'
+      robot.runBasic 'ram', 10
     .then ->
-      console.log 'Started orBasic at line 10 in Sphero RAM'
+      console.log 'Started orbBasic at line 10 in Sphero RAM'
     .catch (error) ->
       console.error error
       robot.close()
@@ -25,7 +26,7 @@ runMacro = (robot, sourcePath) ->
   fs.readFile(sourcePath, encoding: 'utf8')
     .then (data) ->
       console.log "Read macro from #{sourcePath}"
-      macro = Sphero.Macro.compile data
+      macro = macros.compile data
       console.log "Compiled macro"
       robot.resetMacros()
     .then ->
@@ -56,14 +57,14 @@ module.exports.bootCli = ->
     .then (channel) ->
       recorder = new Sphero.ChannelRecorder channel, 'sphero.log'
       recorder.open().then -> recorder
-    .then (recorder) ->
-      robot = new Sphero.Robot recorder
+    .then (channel) ->
+      robot = new Sphero.Robot channel
       robot.on 'error', (error) ->
         console.error error
       robot.on 'macro', (event) ->
         console.log "macro marker: #{event.markerId} macro #{event.macroId} " +
                     "command: #{event.commandId}"
-      robot.on 'basicPrint', (event) ->
+      robot.on 'basic', (event) ->
         console.log "orbBasic print: #{event.message}"
       robot.on 'basicError', (event) ->
         console.log "orbBasic error: #{event.message}"
