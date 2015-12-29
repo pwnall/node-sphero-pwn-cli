@@ -1,8 +1,12 @@
 # This macro prints out a marker and flashes the Sphero's RGB LED.
+
 flag $markerOnEnd :on
+# Stop the macro if we lose the Bluetooth connection.
 flag $stopOnDisconnect :on
 
 rgb 0, 255, 0
+# The fading is performed in the background, so we need a delay command to
+# prevent the macro from terminating early.
 rgbfade 0, 0, 255, 3000
 marker 42
 delay 3000

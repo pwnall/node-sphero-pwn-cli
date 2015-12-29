@@ -1,0 +1,28 @@
+# This macro drives the Sphero around in a square, while the RGB LED
+# transitions between different colors.
+
+# Make sure the poor Sphero doesn't keep driving around if something goes wrong
+# in the macro.
+flag $brakeOnEnd :on
+flag $markerOnEnd :on
+# Stop the macro if we lose the Bluetooth connection.
+flag $stopOnDisconnect :on
+
+let $speed 93    # Higher speeds will result in bigger squares.
+let $delay 3000  # Turning takes about 1500 milliseconds.
+
+rgb 255, 0, 0
+rgbfade 255, 255, 0, $delay  # The fading happens in the background.
+roll $speed, 0  # Driving happens while the RGB LED fades.
+delay $delay
+rgbfade 0, 255, 255, $delay
+roll $speed, 90
+delay $delay
+rgbfade 0, 0, 255, $delay
+roll $speed, 180
+delay $delay
+rgbfade 255, 0, 0, $delay
+roll $speed, 270
+delay $delay
+speed :brake  # This tells the robot to brake without changing speed.
+end
