@@ -27,11 +27,11 @@ runMacro = (robot, sourcePath) ->
     .then (data) ->
       console.log "Read macro from #{sourcePath}"
       macro = macros.compile data
-      console.log "Compiled macro"
+      console.log "Compiled macro: #{macro.bytes.length} bytes"
       robot.resetMacros()
     .then ->
       console.log "Reset Sphero macro executive"
-      robot.setMacro 0xFF, new Buffer(macro.bytes)
+      robot.loadMacro 0xFF, new Buffer(macro.bytes)
     .then ->
       console.log "Loaded macro into Sphero RAM"
       robot.runMacro 0xFF
