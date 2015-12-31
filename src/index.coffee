@@ -52,6 +52,9 @@ runMacro = (robots, sourcePath) ->
       robot.close()
 
 module.exports.bootCli = ->
+  if process.argv.length < 4
+    return Sphero.boot()
+
   sourceIds = process.argv[2].split(',')
   sourcePath = process.argv[3]
 
